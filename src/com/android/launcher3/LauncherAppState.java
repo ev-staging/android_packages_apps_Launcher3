@@ -125,6 +125,10 @@ public class LauncherAppState {
         mModel.startLoaderFromBackground();
     }
 
+    public void recreateWidgetPreviewDb() {
+        mWidgetCache.recreateWidgetPreviewDb();
+    }
+
     LauncherModel setLauncher(Launcher launcher) {
         getLauncherProvider().setLauncherProviderChangeListener(launcher);
         mModel.initialize(launcher);
