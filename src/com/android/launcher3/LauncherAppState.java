@@ -119,6 +119,10 @@ public class LauncherAppState {
             // TODO: add a broadcast entry to the manifest for pre-N.
             filter.addAction(Intent.ACTION_WALLPAPER_CHANGED);
         }
+        // For updating the app icon
+        if (Utilities.isUnreadCountEnabled(sContext)) {
+            filter.addAction(LauncherModel.ACTION_UNREAD_CHANGED);
+        }
 
         sContext.registerReceiver(mModel, filter);
         UserManagerCompat.getInstance(sContext).enableAndResetCache();
