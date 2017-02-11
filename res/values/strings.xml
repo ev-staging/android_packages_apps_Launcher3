@@ -304,4 +304,7 @@
     <!-- Folder titles -->
     <string name="google_title" translatable="false">Google</string>
     <string name="play_folder_title">Play</string>
+
+    <string name="left_tab_label">Google Now tab</string>
+    <string name="left_tab_description">Toggle Google Now intergration</string>
 </resources>

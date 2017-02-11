@@ -179,6 +179,10 @@ public class Launcher extends BaseActivity
     private static final int SOFT_INPUT_MODE_ALL_APPS =
             WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
 
+    // The Intent action that defines whether to make the left tab available
+    public static final String ACTION_LEFT_PAGE_CHANGED =
+            "com.android.launcher3.intent.ACTION_LEFT_PAGE_CHANGED";
+
     // The Intent extra that defines whether to ignore the launch animation
     static final String INTENT_EXTRA_IGNORE_LAUNCH_ANIMATION =
             "com.android.launcher3.intent.extra.shortcut.INGORE_LAUNCH_ANIMATION";
@@ -324,6 +328,26 @@ public class Launcher extends BaseActivity
     public ViewGroupFocusHelper mFocusHandler;
     private boolean mRotationEnabled = false;
 
+    private LauncherTab mLauncherTab;
+    private boolean mLauncherTabEnabled;
+
+    private final BroadcastReceiver mLeftPageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ACTION_LEFT_PAGE_CHANGED.equals(intent.getAction())) {
+                if (mLauncherTab != null) {
+                    mLauncherTabEnabled = isLauncherTabEnabled();
+                    mLauncherTab.updateLauncherTab(mLauncherTabEnabled);
+                    if (!mLauncherTabEnabled) {
+                        mLauncherTab.getClient().onDestroy();
+                    } else {
+                        mLauncherTab.getClient().onAttachedToWindow();
+                    }
+                }
+            }
+        }
+    };
+
     @Thunk void setOrientation() {
         if (mRotationEnabled) {
             unlockScreenOrientation(true);
@@ -433,6 +457,12 @@ public class Launcher extends BaseActivity
         // For handling default keys
         mDefaultKeySsb = new SpannableStringBuilder();
         Selection.setSelection(mDefaultKeySsb, 0);
+
+        IntentFilter nowPageFilter = new IntentFilter(ACTION_LEFT_PAGE_CHANGED);
+        registerReceiver(mLeftPageReceiver, nowPageFilter);
+
+        mLauncherTabEnabled = isLauncherTabEnabled();
+        mLauncherTab = new LauncherTab(this, mLauncherTabEnabled);
 
         mRotationEnabled = getResources().getBoolean(R.bool.allow_rotation);
         // In case we are on a device with locked rotation, we should look at preferences to check
@@ -1063,6 +1093,11 @@ public class Launcher extends BaseActivity
             mAllAppsController.showDiscoveryBounce();
         }
         mIsResumeFromActionScreenOff = false;
+
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onResume();
+        }
+
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onResume();
         }
@@ -1083,6 +1118,10 @@ public class Launcher extends BaseActivity
         // debounce excess onHide calls.
         if (mWorkspace.getCustomContentCallbacks() != null) {
             mWorkspace.getCustomContentCallbacks().onHide();
+        }
+
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onPause();
         }
 
         if (mLauncherCallbacks != null) {
@@ -1599,6 +1638,10 @@ public class Launcher extends BaseActivity
         FirstFrameAnimatorHelper.initializeDrawListener(getWindow().getDecorView());
         mAttached = true;
 
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onAttachedToWindow();
+        }
+
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onAttachedToWindow();
         }
@@ -1612,6 +1655,9 @@ public class Launcher extends BaseActivity
             mAttached = false;
         }
 
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onDetachedFromWindow();
+        }
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onDetachedFromWindow();
         }
@@ -1654,6 +1700,10 @@ public class Launcher extends BaseActivity
             }
             clearTypedText();
         }
+    }
+
+    private boolean isLauncherTabEnabled() {
+        return Utilities.getPrefs(this).getBoolean(ACTION_LEFT_PAGE_CHANGED, true);
     }
 
     public DragLayer getDragLayer() {
@@ -1775,6 +1825,10 @@ public class Launcher extends BaseActivity
                 mWidgetsView.scrollToTop();
             }
 
+            if (mLauncherTabEnabled) {
+                mLauncherTab.getClient().hideOverlay(true);
+            }
+
             if (mLauncherCallbacks != null) {
                 mLauncherCallbacks.onHomeIntent();
             }
@@ -1879,6 +1933,11 @@ public class Launcher extends BaseActivity
                 .removeAccessibilityStateChangeListener(this);
 
         LauncherAnimUtils.onDestroyActivity();
+
+        unregisterReceiver(mLeftPageReceiver);
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onDestroy();
+        }
 
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onDestroy();

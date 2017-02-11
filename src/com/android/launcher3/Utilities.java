@@ -285,6 +285,21 @@ public final class Utilities {
         }
     }
 
+    public static boolean isPackageInstalled(Context context, String pkg) {
+        if (pkg != null) {
+            try {
+                PackageInfo pi = context.getPackageManager().getPackageInfo(pkg, 0);
+                if (!pi.applicationInfo.enabled) {
+                    return false;
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * This picks a dominant color, looking for high-saturation, high-value, repeated hues.
      * @param bitmap The bitmap to scan

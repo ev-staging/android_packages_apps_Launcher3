@@ -18,12 +18,15 @@ package com.android.launcher3;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.provider.Settings.System;
 import android.support.v4.os.BuildCompat;
@@ -38,6 +41,7 @@ public class SettingsActivity extends Activity {
     private static final String ICON_BADGING_PREFERENCE_KEY = "pref_icon_badging";
     // TODO: use Settings.Secure.NOTIFICATION_BADGING
     private static final String NOTIFICATION_BADGING = "notification_badging";
+    private static final String LEFT_TAB_PREFERENCE_KEY = "pref_left_tab";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,9 @@ public class SettingsActivity extends Activity {
 
         private SystemDisplayRotationLockObserver mRotationLockObserver;
         private IconBadgingObserver mIconBadgingObserver;
+
+        private SwitchPreference mLeftPage;
+        private boolean mLeftPageState;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -106,6 +113,16 @@ public class SettingsActivity extends Activity {
                     getPreferenceScreen().removePreference(iconShapeOverride);
                 }
             }
+
+            mLeftPageState = Utilities.getPrefs(getActivity()).getBoolean(
+                    Launcher.ACTION_LEFT_PAGE_CHANGED, true);
+
+            mLeftPage = (SwitchPreference) findPreference(LEFT_TAB_PREFERENCE_KEY);
+            if (!isSearchInstalled()) {
+                getPreferenceScreen().removePreference(mLeftPage);
+            } else {
+                mLeftPage.setChecked(mLeftPageState);
+            }
         }
 
         @Override
@@ -119,6 +136,24 @@ public class SettingsActivity extends Activity {
                 mIconBadgingObserver = null;
             }
             super.onDestroy();
+        }
+
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference pref) {
+            if (pref == mLeftPage) {
+                mLeftPageState = Utilities.getPrefs(getActivity()).getBoolean(
+                        Launcher.ACTION_LEFT_PAGE_CHANGED, true);
+                Utilities.getPrefs(getActivity()).edit().putBoolean(
+                        Launcher.ACTION_LEFT_PAGE_CHANGED, !mLeftPageState).commit();
+                Intent intent = new Intent(Launcher.ACTION_LEFT_PAGE_CHANGED);
+                getActivity().sendBroadcast(intent);
+                return true;
+            }
+            return false;
+        }
+
+        private boolean isSearchInstalled() {
+            return Utilities.isPackageInstalled(getActivity(), LauncherTab.SEARCH_PACKAGE);
         }
     }
 
