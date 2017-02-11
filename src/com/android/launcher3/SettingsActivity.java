@@ -30,6 +30,8 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.provider.Settings;
 
 import com.android.launcher3.graphics.IconShapeOverride;
@@ -47,6 +49,7 @@ public class SettingsActivity extends Activity {
     public static final String NOTIFICATION_BADGING = "notification_badging";
     /** Hidden field Settings.Secure.ENABLED_NOTIFICATION_LISTENERS */
     private static final String NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners";
+    private static final String LEFT_TAB_PREFERENCE_KEY = "pref_left_tab";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,9 @@ public class SettingsActivity extends Activity {
 
         private SystemDisplayRotationLockObserver mRotationLockObserver;
         private IconBadgingObserver mIconBadgingObserver;
+
+        private SwitchPreference mLeftPage;
+        private boolean mLeftPageState;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -115,6 +121,16 @@ public class SettingsActivity extends Activity {
                     getPreferenceScreen().removePreference(iconShapeOverride);
                 }
             }
+
+            mLeftPageState = Utilities.getPrefs(getActivity()).getBoolean(
+                    Launcher.ACTION_LEFT_PAGE_CHANGED, true);
+
+            mLeftPage = (SwitchPreference) findPreference(LEFT_TAB_PREFERENCE_KEY);
+            if (!isSearchInstalled()) {
+                getPreferenceScreen().removePreference(mLeftPage);
+            } else {
+                mLeftPage.setChecked(mLeftPageState);
+            }
         }
 
         @Override
@@ -128,6 +144,24 @@ public class SettingsActivity extends Activity {
                 mIconBadgingObserver = null;
             }
             super.onDestroy();
+        }
+
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference pref) {
+            if (pref == mLeftPage) {
+                mLeftPageState = Utilities.getPrefs(getActivity()).getBoolean(
+                        Launcher.ACTION_LEFT_PAGE_CHANGED, true);
+                Utilities.getPrefs(getActivity()).edit().putBoolean(
+                        Launcher.ACTION_LEFT_PAGE_CHANGED, !mLeftPageState).commit();
+                Intent intent = new Intent(Launcher.ACTION_LEFT_PAGE_CHANGED);
+                getActivity().sendBroadcast(intent);
+                return true;
+            }
+            return false;
+        }
+
+        private boolean isSearchInstalled() {
+            return Utilities.isPackageInstalled(getActivity(), LauncherTab.SEARCH_PACKAGE);
         }
     }
 
