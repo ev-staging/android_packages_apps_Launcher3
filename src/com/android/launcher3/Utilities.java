@@ -51,6 +51,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
+import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.config.ProviderConfig;
 
 import java.io.ByteArrayOutputStream;
@@ -132,6 +133,13 @@ public final class Utilities {
     public static boolean isAllowRotationPrefEnabled(Context context) {
         return getPrefs(context).getBoolean(ALLOW_ROTATION_PREFERENCE_KEY,
                 getAllowRotationDefaultValue(context));
+    }
+
+    public static final String SEARCH_BAR_PREFERENCE_KEY = "pref_search_bar";
+
+    public static boolean showSearchBar(Context context) {
+        return Utilities.getPrefs(context).getBoolean(SEARCH_BAR_PREFERENCE_KEY,
+                FeatureFlags.QSB_ON_FIRST_SCREEN);
     }
 
     public static boolean getAllowRotationDefaultValue(Context context) {

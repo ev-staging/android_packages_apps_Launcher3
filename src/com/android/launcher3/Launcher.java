@@ -222,6 +222,7 @@ public class Launcher extends BaseActivity
     @Thunk DragLayer mDragLayer;
     private DragController mDragController;
     private View mQsbContainer;
+    private boolean mShowSearchBar;
 
     public View mWeightWatcher;
 
@@ -463,6 +464,8 @@ public class Launcher extends BaseActivity
 
         mLauncherTabEnabled = isLauncherTabEnabled();
         mLauncherTab = new LauncherTab(this, mLauncherTabEnabled);
+
+        mShowSearchBar = Utilities.showSearchBar(getApplicationContext());
 
         mRotationEnabled = getResources().getBoolean(R.bool.allow_rotation);
         // In case we are on a device with locked rotation, we should look at preferences to check
@@ -2965,6 +2968,7 @@ public class Launcher extends BaseActivity
             getWindow().getDecorView()
                     .sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
         }
+        mWorkspace.updateQsbVisibility(mShowSearchBar);
         return changed;
     }
 
@@ -4185,7 +4189,8 @@ public class Launcher extends BaseActivity
     private class LauncherPrefChangeHandler implements OnSharedPreferenceChangeListener {
 
         private String validPrefs[] = {
-            Utilities.ALLOW_ROTATION_PREFERENCE_KEY
+            Utilities.ALLOW_ROTATION_PREFERENCE_KEY,
+            Utilities.SEARCH_BAR_PREFERENCE_KEY
         };
 
         @Override
@@ -4198,6 +4203,8 @@ public class Launcher extends BaseActivity
                 }
             }
             if (update) {
+                // Update the search bar preference
+                mShowSearchBar = Utilities.showSearchBar(getApplicationContext());
                 // Finish this instance of the activity. When the activity is recreated,
                 // it will initialize the rotation preference again.
                 finish();

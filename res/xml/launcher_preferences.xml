@@ -59,4 +59,12 @@
         android:persistent="true"
     />
 
+    <SwitchPreference
+        android:key="pref_search_bar"
+        android:title="@string/search_bar_title"
+        android:summaryOn="@string/search_bar_desc_on"
+        android:summaryOff="@string/search_bar_desc_off"
+        android:persistent="true"
+    />
+
 </PreferenceScreen>
