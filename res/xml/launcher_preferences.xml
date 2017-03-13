@@ -53,6 +53,12 @@
         android:persistent="false" />
 
     <SwitchPreference
+        android:key="pref_qsb_widget"
+        android:title="@string/enable_qsb_widget_title"
+        android:summary="@string/enable_qsb_widget_desc"
+        android:persistent="true" />
+
+    <SwitchPreference
         android:key="pref_enable_minus_one"
         android:title="@string/enable_minus_one_title"
         android:summary="@string/enable_minus_one_desc"

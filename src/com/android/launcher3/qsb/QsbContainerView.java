@@ -27,6 +27,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -39,6 +40,7 @@ import com.android.launcher3.AppWidgetResizeFrame;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
+import com.android.launcher3.SettingsActivity;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.searchlauncher.SearchLauncherCallbacks;
@@ -77,7 +79,8 @@ public class QsbContainerView extends FrameLayout {
     /**
      * A fragment to display the QSB.
      */
-    public static class QsbFragment extends Fragment implements View.OnClickListener {
+    public static class QsbFragment extends Fragment
+            implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
         private static final int REQUEST_BIND_QSB = 1;
         private static final String QSB_WIDGET_ID = "qsb_widget_id";
@@ -87,6 +90,7 @@ public class QsbContainerView extends FrameLayout {
         private QsbWidgetHost mQsbWidgetHost;
         private AppWidgetProviderInfo mWidgetInfo;
         private QsbWidgetHostView mQsb;
+        private boolean mQsbWidgetVisible;
 
         // We need to store the orientation here, due to a bug (b/64916689) that results in widgets
         // being inflated in the wrong orientation.
@@ -97,6 +101,9 @@ public class QsbContainerView extends FrameLayout {
             super.onCreate(savedInstanceState);
             mQsbWidgetHost = new QsbWidgetHost(getActivity());
             mOrientation = getContext().getResources().getConfiguration().orientation;
+            SharedPreferences prefs = Utilities.getPrefs(getActivity());
+            mQsbWidgetVisible = prefs.getBoolean(SettingsActivity.KEY_QSB_WIDGET, FeatureFlags.QSB_ON_FIRST_SCREEN);
+            prefs.registerOnSharedPreferenceChangeListener(this);
         }
 
         private FrameLayout mWrapper;
@@ -250,7 +257,14 @@ public class QsbContainerView extends FrameLayout {
         }
 
         public boolean isQsbEnabled() {
-            return FeatureFlags.QSB_ON_FIRST_SCREEN;
+            return mQsbWidgetVisible;
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            if (SettingsActivity.KEY_QSB_WIDGET.equals(key)) {
+                mQsbWidgetVisible = prefs.getBoolean(key, FeatureFlags.QSB_ON_FIRST_SCREEN);
+            }
         }
     }
 
