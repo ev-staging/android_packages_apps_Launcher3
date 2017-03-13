@@ -93,6 +93,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.android.launcher3.ItemInfoWithIcon.FLAG_ICON_BADGED;
+import static com.android.launcher3.settings.SettingsActivity.KEY_QSB_WIDGET;
 
 /**
  * Various utilities shared amongst the Launcher's classes.
@@ -788,5 +789,9 @@ public final class Utilities {
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
+    }
+
+    public static boolean isSearchBarVisible(Context context) {
+        return getPrefs(context).getBoolean(KEY_QSB_WIDGET, FeatureFlags.QSB_ON_FIRST_SCREEN);
     }
 }

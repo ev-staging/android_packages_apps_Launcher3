@@ -32,4 +32,8 @@
     <string name="settings_category_home">Home screen settings</string>
     <string name="settings_category_icons">Icons settings</string>
 
+    <!-- Search bar visibility setting -->
+    <string name="enable_qsb_widget_title">Search bar on home screen</string>
+    <string name="enable_qsb_widget_desc">Toggle the search bar visibility on the home screen</string>
+
 </resources>

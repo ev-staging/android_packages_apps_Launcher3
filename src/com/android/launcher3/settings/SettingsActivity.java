@@ -71,6 +71,7 @@ public class SettingsActivity extends Activity
 
     public static final String GRID_OPTIONS_PREFERENCE_KEY = "pref_grid_options";
     public static final String KEY_MINUS_ONE = "pref_enable_minus_one";
+    public static final String KEY_QSB_WIDGET = "pref_qsb_widget";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,6 +242,8 @@ public class SettingsActivity extends Activity
                 case KEY_MINUS_ONE:
                     return Utilities.hasPackageInstalled(getContext(),
                             SearchLauncherCallbacks.SEARCH_PACKAGE);
+                case KEY_QSB_WIDGET:
+                    return Utilities.isSearchBarVisible(getContext());
             }
 
             return true;
