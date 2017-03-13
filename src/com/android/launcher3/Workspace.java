@@ -606,9 +606,10 @@ public class Workspace extends PagedView
                     .inflate(R.layout.search_container_workspace,firstPage, false);
         }
 
+        boolean visible = Utilities.showSearchBar(mLauncher);
         CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 0, firstPage.getCountX(), 1);
         lp.canReorder = false;
-        if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
+        if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, visible)) {
             Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
         }
     }
@@ -4152,6 +4153,19 @@ public class Workspace extends PagedView
         @Override
         public void onAnimationEnd(Animator animation) {
             onEndStateTransition();
+        }
+    }
+
+    public void updateQsbVisibility(boolean visible) {
+        View qsb = findViewById(R.id.search_container_workspace);
+        if (qsb != null) {
+            qsb.setVisibility(visible ? View.VISIBLE : View.GONE);
+            CellLayout firstPage = mWorkspaceScreens.get(FIRST_SCREEN_ID);
+            if (!visible) {
+                firstPage.markCellsAsUnoccupiedForView(qsb);
+            } else {
+                firstPage.markCellsAsOccupiedForView(qsb);
+            }
         }
     }
 }

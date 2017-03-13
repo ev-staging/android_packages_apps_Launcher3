@@ -136,6 +136,13 @@ public final class Utilities {
                 getAllowRotationDefaultValue(context));
     }
 
+    public static final String SEARCH_BAR_PREFERENCE_KEY = "pref_search_bar";
+
+    public static boolean showSearchBar(Context context) {
+        return Utilities.getPrefs(context).getBoolean(SEARCH_BAR_PREFERENCE_KEY,
+                FeatureFlags.QSB_ON_FIRST_SCREEN);
+    }
+
     public static boolean getAllowRotationDefaultValue(Context context) {
         if (ATLEAST_NOUGAT) {
             // If the device was scaled, used the original dimensions to determine if rotation

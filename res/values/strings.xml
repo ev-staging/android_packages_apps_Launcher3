@@ -205,6 +205,12 @@
 
     <!-- Message shown in the progress dialog when the icon shape override is being applied [CHAR LIMIT=100]-->
     <string name="icon_shape_override_progress">Applying icon shape changes</string>
+    <!-- Title for Show search bar setting. [CHAR LIMIT=50] -->
+    <string name="search_bar_title">Search bar</string>
+    <!-- Text to indicate that the search bar setting is on [CHAR LIMIT=100] -->
+    <string name="search_bar_desc_on">On</string>
+    <!-- Text to indicate that the search bar setting is off [CHAR LIMIT=100] -->
+    <string name="search_bar_desc_off">Off</string>
 
     <!-- Label on an icon that references an uninstalled package, for which we have no information about when it might be installed. [CHAR_LIMIT=15] -->
     <string name="package_state_unknown">Unknown</string>
