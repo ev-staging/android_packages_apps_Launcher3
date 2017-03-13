@@ -628,4 +628,8 @@ public final class Utilities {
             return false;
         }
     }
+
+    public static boolean isQsbAvailable(Context context) {
+        return getPrefs(context).getBoolean(SettingsActivity.KEY_QSB_WIDGET, FeatureFlags.QSB_ON_FIRST_SCREEN);
+    }
 }

@@ -62,6 +62,7 @@ public class SettingsActivity extends Activity {
     /** Hidden field Settings.Secure.ENABLED_NOTIFICATION_LISTENERS */
     private static final String NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners";
     public static final String KEY_MINUS_ONE = "pref_enable_minus_one";
+    public static final String KEY_QSB_WIDGET = "pref_qsb_widget";
 
     private static final String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
     private static final String EXTRA_SHOW_FRAGMENT_ARGS = ":settings:show_fragment_args";

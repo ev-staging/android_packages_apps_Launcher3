@@ -37,6 +37,8 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -105,7 +107,8 @@ import java.util.Set;
  */
 public class Workspace extends PagedView<WorkspacePageIndicator>
         implements DropTarget, DragSource, View.OnTouchListener,
-        DragController.DragListener, Insettable, LauncherStateManager.StateHandler {
+        DragController.DragListener, Insettable, LauncherStateManager.StateHandler,
+        OnSharedPreferenceChangeListener {
     private static final String TAG = "Launcher.Workspace";
 
     /** The value that {@link #mTransitionProgress} must be greater than for
@@ -247,6 +250,8 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
     // Handles workspace state transitions
     private final WorkspaceStateTransitionAnimation mStateTransitionAnimation;
 
+    private boolean mQsbVisible;
+
     /**
      * Used to inflate the Workspace from XML.
      *
@@ -272,6 +277,10 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         mWallpaperManager = WallpaperManager.getInstance(context);
 
         mWallpaperOffset = new WallpaperOffsetInterpolator(this);
+
+        SharedPreferences prefs = Utilities.getPrefs(mLauncher);
+        mQsbVisible = prefs.getBoolean(SettingsActivity.KEY_QSB_WIDGET, Utilities.isQsbAvailable(mLauncher));
+        prefs.registerOnSharedPreferenceChangeListener(this);
 
         setHapticFeedbackEnabled(false);
         initWorkspace();
@@ -477,12 +486,29 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         return mTouchState != TOUCH_STATE_REST;
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        if (SettingsActivity.KEY_QSB_WIDGET.equals(key)) {
+            View qsb = findViewById(R.id.search_container_workspace);
+            mQsbVisible = prefs.getBoolean(key, Utilities.isQsbAvailable(mLauncher));
+            if (qsb != null) {
+                qsb.setVisibility(mQsbVisible ? View.VISIBLE : View.GONE);
+                CellLayout firstPage = mWorkspaceScreens.get(FIRST_SCREEN_ID);
+                if (!mQsbVisible) {
+                    firstPage.markCellsAsUnoccupiedForView(qsb);
+                } else {
+                    firstPage.markCellsAsOccupiedForView(qsb);
+                }
+            }
+        }
+    }
+
     /**
      * Initializes and binds the first page
      * @param qsb an existing qsb to recycle or null.
      */
     public void bindAndInitFirstWorkspaceScreen(View qsb) {
-        if (!FeatureFlags.QSB_ON_FIRST_SCREEN) {
+        if (!Utilities.isQsbAvailable(mLauncher)) {
             return;
         }
         // Add the first page
@@ -497,7 +523,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
 
         CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 0, firstPage.getCountX(), 1);
         lp.canReorder = false;
-        if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
+        if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, mQsbVisible)) {
             Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
         }
     }
@@ -785,7 +811,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             long id = mWorkspaceScreens.keyAt(i);
             CellLayout cl = mWorkspaceScreens.valueAt(i);
             // FIRST_SCREEN_ID can never be removed.
-            if ((!FeatureFlags.QSB_ON_FIRST_SCREEN || id > FIRST_SCREEN_ID)
+            if ((!Utilities.isQsbAvailable(mLauncher) || id > FIRST_SCREEN_ID)
                     && cl.getShortcutsAndWidgets().getChildCount() == 0) {
                 removeScreens.add(id);
             }

@@ -31,6 +31,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -43,6 +44,7 @@ import com.android.launcher3.AppWidgetResizeFrame;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
+import com.android.launcher3.SettingsActivity;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.searchlauncher.SearchLauncherCallbacks;
@@ -116,7 +118,7 @@ public class QsbContainerView extends FrameLayout {
             mWrapper = new FrameLayout(getActivity());
 
             // Only add the view when enabled
-            if (isQsbEnabled()) {
+            if (Utilities.isQsbAvailable(getActivity())) {
                 mWrapper.addView(createQsb(mWrapper));
             }
             return mWrapper;
@@ -226,7 +228,7 @@ public class QsbContainerView extends FrameLayout {
 
         private void rebindFragment() {
             // Exit if the embedded qsb is disabled
-            if (!isQsbEnabled()) {
+            if (!Utilities.isQsbAvailable(getActivity())) {
                 return;
             }
 
@@ -234,10 +236,6 @@ public class QsbContainerView extends FrameLayout {
                 mWrapper.removeAllViews();
                 mWrapper.addView(createQsb(mWrapper));
             }
-        }
-
-        public boolean isQsbEnabled() {
-            return FeatureFlags.QSB_ON_FIRST_SCREEN;
         }
 
         protected Bundle createBindOptions() {
