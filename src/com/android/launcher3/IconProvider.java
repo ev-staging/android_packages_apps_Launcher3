@@ -8,6 +8,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,17 +32,21 @@ public class IconProvider {
     private static final String CALENDAR_PACKAGE = "com.google.android.calendar";
     private static final String CALENDAR_ROUND_ICONS = "com.google.android.calendar._icons_nexus_round";
 
+    private Context mContext;
     private BroadcastReceiver mBroadcastReceiver;
     protected PackageManager mPackageManager;
     protected String mSystemState;
+    private IconsHandler mIconsHandler;
 
     public IconProvider(Context context) {
+        mContext = context;
         BroadcastReceiver mBroadcastReceiver = new IconProviderReceiver(this);
         IntentFilter intentFilter = new IntentFilter("android.intent.action.DATE_CHANGED");
         intentFilter.addAction("android.intent.action.TIME_SET");
         intentFilter.addAction("android.intent.action.TIMEZONE_CHANGED");
         context.registerReceiver(mBroadcastReceiver, intentFilter, null, new Handler(LauncherModel.getWorkerLooper()));
         mPackageManager = context.getPackageManager();
+        mIconsHandler = IconCache.getIconsHandler(context);
 
         updateSystemStateString();
     }
@@ -94,7 +100,7 @@ public class IconProvider {
     }
 
     public Drawable getIcon(LauncherActivityInfoCompat info, int iconDpi) {
-        Drawable drawable = null;
+        Drawable drawable = getIconFromHandler(info, iconDpi);
         String packageName = info.getApplicationInfo().packageName;
         if (isCalendar(packageName)) {
             try {
@@ -109,6 +115,14 @@ public class IconProvider {
             } catch (PackageManager.NameNotFoundException e) {}
         }
         return drawable != null ? drawable : info.getIcon(iconDpi);
+    }
+
+    private Drawable getIconFromHandler(LauncherActivityInfoCompat info, int iconDpi) {
+        Bitmap bm = mIconsHandler.getDrawableIconForPackage(info.getComponentName());
+        if (bm == null) {
+            return null;
+        }
+        return new BitmapDrawable(mContext.getResources(), Utilities.createIconBitmap(bm, mContext));
     }
 
     class IconProviderReceiver extends BroadcastReceiver {

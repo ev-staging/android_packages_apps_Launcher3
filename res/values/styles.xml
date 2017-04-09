@@ -142,4 +142,8 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowShowWallpaper">true</item>
     </style>
+
+    <style name="ChooseIconTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:colorBackground">@color/icon_settings_background</item>
+    </style>
 </resources>

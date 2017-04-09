@@ -20,11 +20,16 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.provider.Settings;
@@ -49,16 +54,24 @@ public class SettingsActivity extends Activity {
     /**
      * This fragment shows the launcher preferences.
      */
-    public static class LauncherSettingsFragment extends PreferenceFragment {
+    public static class LauncherSettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
         private SystemDisplayRotationLockObserver mRotationLockObserver;
         private SwitchPreference mLeftPage;
+
+        private String mDefaultIconPack;
+        private IconsHandler mIconsHandler;
+        private PackageManager mPackageManager;
+        private Preference mIconPack;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesName(LauncherFiles.SHARED_PREFERENCES_KEY);
             addPreferencesFromResource(R.xml.launcher_preferences);
+
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .registerOnSharedPreferenceChangeListener(this);
 
             // Setup allow rotation preference
             Preference rotationPref = findPreference(Utilities.ALLOW_ROTATION_PREFERENCE_KEY);
@@ -88,15 +101,36 @@ public class SettingsActivity extends Activity {
                         Utilities.ACTION_LEFT_PAGE_CHANGED, true);
                 mLeftPage.setChecked(state);
             }
+
+            mPackageManager = getActivity().getPackageManager();
+            mDefaultIconPack = getString(R.string.default_iconpack_title);
+            mIconsHandler = IconCache.getIconsHandler(getActivity().getApplicationContext());
+            mIconPack = (Preference) findPreference(Utilities.ICON_PACK_PREFERENCE_KEY);
+
+            reloadIconPackSummary();
         }
 
         @Override
+        public void onPause() {
+            super.onPause();
+            mIconsHandler.hideDialog();
+        }
+
+
+        @Override
         public void onDestroy() {
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .unregisterOnSharedPreferenceChangeListener(this);
             if (mRotationLockObserver != null) {
                 getActivity().getContentResolver().unregisterContentObserver(mRotationLockObserver);
                 mRotationLockObserver = null;
             }
             super.onDestroy();
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            reloadIconPackSummary();
         }
 
         @Override
@@ -110,11 +144,31 @@ public class SettingsActivity extends Activity {
                 getActivity().sendBroadcast(intent);
                 return true;
             }
+            if (pref == mIconPack) {
+                mIconsHandler.showDialog(getActivity());
+                return true;
+            }
             return false;
         }
 
         private boolean isSearchInstalled() {
             return Utilities.isPackageInstalled(getActivity(), LauncherTab.SEARCH_PACKAGE);
+        }
+
+        private void reloadIconPackSummary() {
+            ApplicationInfo info = null;
+            String iconPack = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .getString(Utilities.ICON_PACK_PREFERENCE_KEY, mDefaultIconPack);
+            if (!mIconsHandler.isDefaultIconPack()) {
+                try {
+                    info = mPackageManager.getApplicationInfo(iconPack, 0);
+                } catch (PackageManager.NameNotFoundException e) {
+                }
+                if (info != null) {
+                    iconPack = mPackageManager.getApplicationLabel(info).toString();
+                }
+            }
+            mIconPack.setSummary(iconPack);
         }
     }
 
