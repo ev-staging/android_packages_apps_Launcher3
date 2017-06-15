@@ -196,6 +196,10 @@
     <string name="search_bar_desc_on">On</string>
     <!-- Text to indicate that the search bar setting is off [CHAR LIMIT=100] -->
     <string name="search_bar_desc_off">Off</string>
+    <!-- Title for Icon pack setting. [CHAR LIMIT=50] -->
+    <string name="icon_pack_title">Icon Pack</string>
+    <!-- Text to indicate the current icon pack [CHAR LIMIT=100] -->
+    <string name="icon_pack_desc">Select an icon Pack</string>
 
     <!-- Label on an icon that references an uninstalled package, for which we have no information about when it might be installed. [CHAR_LIMIT=15] -->
     <string name="package_state_unknown">Unknown</string>
