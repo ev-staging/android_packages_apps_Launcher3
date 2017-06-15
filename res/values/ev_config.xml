@@ -19,4 +19,7 @@
     <item type="id" name="g_icon" />
     <item type="id" name="mic_icon" />
 
+    <!-- Icon packs -->
+    <string name="iconPackPackageDefault" translatable="false">""</string>
+
 </resources>
