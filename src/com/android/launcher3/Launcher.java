@@ -370,7 +370,7 @@ public class Launcher extends BaseActivity
         }
     }
 
-    private RotationPrefChangeHandler mRotationPrefChangeHandler;
+    private LauncherPrefChangeHandler mLauncherPrefChangeHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -489,9 +489,12 @@ public class Launcher extends BaseActivity
         // if the user has specifically allowed rotation.
         if (!mRotationEnabled) {
             mRotationEnabled = Utilities.isAllowRotationPrefEnabled(getApplicationContext());
-            mRotationPrefChangeHandler = new RotationPrefChangeHandler();
-            mSharedPrefs.registerOnSharedPreferenceChangeListener(mRotationPrefChangeHandler);
         }
+
+        if (mLauncherPrefChangeHandler != null) {
+            mLauncherPrefChangeHandler = new LauncherPrefChangeHandler();
+        }
+        mSharedPrefs.registerOnSharedPreferenceChangeListener(mLauncherPrefChangeHandler);
 
         if (PinItemDragListener.handleDragRequest(this, getIntent())) {
             // Temporarily enable the rotation
@@ -1893,8 +1896,8 @@ public class Launcher extends BaseActivity
             LauncherAppState.getInstance(this).setLauncher(null);
         }
 
-        if (mRotationPrefChangeHandler != null) {
-            mSharedPrefs.unregisterOnSharedPreferenceChangeListener(mRotationPrefChangeHandler);
+        if (mLauncherPrefChangeHandler != null) {
+            mSharedPrefs.unregisterOnSharedPreferenceChangeListener(mLauncherPrefChangeHandler);
         }
 
         try {
@@ -4086,13 +4089,23 @@ public class Launcher extends BaseActivity
         return ((Launcher) ((ContextWrapper) context).getBaseContext());
     }
 
-    private class RotationPrefChangeHandler implements OnSharedPreferenceChangeListener {
+    private class LauncherPrefChangeHandler implements OnSharedPreferenceChangeListener {
+
+        private String validPrefs[] = {
+            Utilities.ALLOW_ROTATION_PREFERENCE_KEY
+        };
 
         @Override
         public void onSharedPreferenceChanged(
                 SharedPreferences sharedPreferences, String key) {
-            if (Utilities.ALLOW_ROTATION_PREFERENCE_KEY.equals(key)) {
-                // Recreate the activity so that it initializes the rotation preference again.
+            boolean update = false;
+            for (String pref: validPrefs) {
+                if (pref.equals(key)) {
+                    update = true;
+                }
+            }
+            if (update) {
+                // Recreate the activity so that it initializes the preferences again.
                 recreate();
             }
         }
