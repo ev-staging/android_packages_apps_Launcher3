@@ -92,7 +92,6 @@
             android:label="@string/settings_button_text"
             android:autoRemoveFromRecents="true"
             android:theme="@style/Settings"
-            android:process=":settings_process"
             android:parentActivityName="com.android.launcher3.Launcher" >
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
