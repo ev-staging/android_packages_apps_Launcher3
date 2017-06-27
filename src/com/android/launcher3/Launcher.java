@@ -216,6 +216,8 @@ public class Launcher extends Activity
     private static int NEW_APPS_ANIMATION_INACTIVE_TIMEOUT_SECONDS = 5;
     @Thunk static int NEW_APPS_ANIMATION_DELAY = 500;
 
+    private boolean mLauncherTabEnabled;
+
     private final BroadcastReceiver mUiBroadcastReceiver = new BroadcastReceiver() {
 
         @Override
@@ -223,6 +225,23 @@ public class Launcher extends Activity
             if (ACTION_APPWIDGET_HOST_RESET.equals(intent.getAction())) {
                 if (mAppWidgetHost != null) {
                     mAppWidgetHost.startListening();
+                }
+            }
+        }
+    };
+
+    private final BroadcastReceiver mLeftPageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Utilities.ACTION_LEFT_PAGE_CHANGED.equals(intent.getAction())) {
+                if (mLauncherTab != null) {
+                    mLauncherTabEnabled = isLauncherTabEnabled();
+                    mLauncherTab.updateLauncherTab(mLauncherTabEnabled);
+                    if (!mLauncherTabEnabled) {
+                        mLauncherTab.getClient().onDestroy();
+                    } else {
+                        mLauncherTab.getClient().onAttachedToWindow();
+                    }
                 }
             }
         }
@@ -487,7 +506,12 @@ public class Launcher extends Activity
         IntentFilter filter = new IntentFilter(ACTION_APPWIDGET_HOST_RESET);
         registerReceiver(mUiBroadcastReceiver, filter);
 
-        mLauncherTab = new LauncherTab(this);
+        IntentFilter nowPageFilter = new IntentFilter(Utilities.ACTION_LEFT_PAGE_CHANGED);
+        registerReceiver(mLeftPageReceiver, nowPageFilter);
+
+        mLauncherTabEnabled = isLauncherTabEnabled();
+
+        mLauncherTab = new LauncherTab(this, mLauncherTabEnabled);
 
         mRotationEnabled = getResources().getBoolean(R.bool.allow_rotation);
         // In case we are on a device with locked rotation, we should look at preferences to check
@@ -1147,7 +1171,9 @@ public class Launcher extends Activity
         }
         mIsResumeFromActionScreenOff = false;
 
-        mLauncherTab.getClient().onResume();
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onResume();
+        }
 
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onResume();
@@ -1172,7 +1198,9 @@ public class Launcher extends Activity
             mWorkspace.getCustomContentCallbacks().onHide();
         }
 
-        mLauncherTab.getClient().onPause();
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onPause();
+        }
 
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onPause();
@@ -1711,7 +1739,9 @@ public class Launcher extends Activity
         mAttached = true;
         mVisible = true;
 
-        mLauncherTab.getClient().onAttachedToWindow();
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onAttachedToWindow();
+        }
 
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onAttachedToWindow();
@@ -1729,8 +1759,9 @@ public class Launcher extends Activity
         }
         updateAutoAdvanceState();
 
-        mLauncherTab.getClient().onDetachedFromWindow();
-
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onDetachedFromWindow();
+        }
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onDetachedFromWindow();
         }
@@ -1825,6 +1856,10 @@ public class Launcher extends Activity
             return true;
         }
     });
+
+    private boolean isLauncherTabEnabled() {
+        return Utilities.getPrefs(this).getBoolean(Utilities.ACTION_LEFT_PAGE_CHANGED, true);
+    }
 
     private void addWidgetToAutoAdvanceIfNeeded(View hostView, AppWidgetProviderInfo appWidgetInfo) {
         if (appWidgetInfo == null || appWidgetInfo.autoAdvanceViewId == -1) return;
@@ -1960,7 +1995,9 @@ public class Launcher extends Activity
                 mWidgetsView.scrollToTop();
             }
 
-            mLauncherTab.getClient().hideOverlay(true);
+            if (mLauncherTabEnabled) {
+                mLauncherTab.getClient().hideOverlay(true);
+            }
 
             if (mLauncherCallbacks != null) {
                 mLauncherCallbacks.onHomeIntent();
@@ -2075,7 +2112,10 @@ public class Launcher extends Activity
 
         LauncherAnimUtils.onDestroyActivity();
 
-        mLauncherTab.getClient().onDestroy();
+        unregisterReceiver(mLeftPageReceiver);
+        if (mLauncherTabEnabled) {
+            mLauncherTab.getClient().onDestroy();
+        }
 
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onDestroy();

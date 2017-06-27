@@ -19,11 +19,14 @@ package com.android.launcher3;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.provider.Settings.System;
 import android.view.MenuItem;
@@ -49,6 +52,7 @@ public class SettingsActivity extends Activity {
     public static class LauncherSettingsFragment extends PreferenceFragment {
 
         private SystemDisplayRotationLockObserver mRotationLockObserver;
+        private SwitchPreference mLeftPage;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +79,12 @@ public class SettingsActivity extends Activity {
                 mRotationLockObserver.onChange(true);
                 rotationPref.setDefaultValue(Utilities.getAllowRotationDefaultValue(getActivity()));
             }
+
+            boolean state = Utilities.getPrefs(getActivity()).getBoolean(
+                    Utilities.ACTION_LEFT_PAGE_CHANGED, true);
+
+            mLeftPage = (SwitchPreference) findPreference(Utilities.KEY_LEFT_PAGE);
+            mLeftPage.setChecked(state);
         }
 
         @Override
@@ -88,6 +98,20 @@ public class SettingsActivity extends Activity {
             if (app != null) {
                 app.reloadAll();
             }
+        }
+
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference pref) {
+            if (pref == mLeftPage) {
+                boolean state = Utilities.getPrefs(getActivity()).getBoolean(
+                        Utilities.ACTION_LEFT_PAGE_CHANGED, true);
+                Utilities.getPrefs(getActivity()).edit().putBoolean(
+                        Utilities.ACTION_LEFT_PAGE_CHANGED, !state).commit();
+                Intent intent = new Intent(Utilities.ACTION_LEFT_PAGE_CHANGED);
+                getActivity().sendBroadcast(intent);
+                return true;
+            }
+            return false;
         }
     }
 

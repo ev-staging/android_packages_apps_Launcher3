@@ -151,6 +151,8 @@ public final class Utilities {
     public static final String SHOW_SEARCH_BAR_PREFERENCE_KEY = "pref_searchBar";
     public static final String ICON_PACK_PREFERENCE_KEY = "pref_iconPackPackage";
     public static final String PREDICTIVE_APPS_PREFERENCE_KEY = "pref_showPredictiveApps";
+    public static final String KEY_LEFT_PAGE = "pref_nowTab";
+    public static final String ACTION_LEFT_PAGE_CHANGED = "com.android.launcher3.intent.ACTION_LEFT_PAGE_CHANGED";
 
     public static boolean isPropertyEnabled(String propertyName) {
         return Log.isLoggable(propertyName, Log.VERBOSE);
