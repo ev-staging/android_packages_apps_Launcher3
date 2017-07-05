@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:background="#00000000"
+            android:background="@color/folder_name_background_color"
             android:fontFamily="sans-serif-condensed"
             android:textStyle="bold"
             android:gravity="center_horizontal"
@@ -55,9 +55,9 @@
             android:paddingBottom="@dimen/folder_label_padding_bottom"
             android:paddingTop="@dimen/folder_label_padding_top"
             android:singleLine="true"
-            android:textColor="#EE777777"
-            android:textColorHighlight="#ffCCCCCC"
-            android:textColorHint="#ff808080"
+            android:textColor="@color/folder_name_normal_text_color"
+            android:textColorHighlight="@color/folder_name_highlight_text_color"
+            android:textColorHint="@color/folder_name_hint_text_color"
             android:textSize="@dimen/folder_label_text_size" />
 
         <com.android.launcher3.pageindicators.PageIndicatorDots

@@ -31,7 +31,7 @@
         android:paddingLeft="@dimen/vert_drop_target_horizontal_gap"
         android:paddingRight="@dimen/vert_drop_target_horizontal_gap"
         android:id="@+id/delete_target_text"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/drop_target_text_color" />
 
     <!-- Uninstall target -->
     <com.android.launcher3.UninstallDropTarget
@@ -41,7 +41,7 @@
         android:paddingLeft="@dimen/vert_drop_target_horizontal_gap"
         android:paddingRight="@dimen/vert_drop_target_horizontal_gap"
         android:id="@+id/uninstall_target_text"
-        android:textColor="@android:color/white"
+        android:textColor="@color/drop_target_text_color"
         android:layout_marginTop="@dimen/vert_drop_target_vertical_gap"/>
 
     <Space
@@ -57,7 +57,7 @@
         android:paddingLeft="@dimen/vert_drop_target_horizontal_gap"
         android:paddingRight="@dimen/vert_drop_target_horizontal_gap"
         android:id="@+id/info_target_text"
-        android:textColor="@android:color/white"
+        android:textColor="@color/drop_target_text_color"
         android:layout_marginBottom="64dp"/>
 
 </com.android.launcher3.DropTargetBar>
