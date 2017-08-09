@@ -155,15 +155,6 @@ public class LauncherAppState {
         mModel.startLoaderFromBackground();
     }
 
-    /**
-     * Reloads everything
-     */
-    public void reloadAll() {
-        mModel.clearIconCache();
-        mModel.resetLoadedState(true, true);
-        mModel.startLoaderFromBackground();
-    }
-
     LauncherModel setLauncher(Launcher launcher) {
         sLauncherProvider.get().setLauncherProviderChangeListener(launcher);
         mModel.initialize(launcher);

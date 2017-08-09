@@ -4653,6 +4653,11 @@ public class Launcher extends Activity
             if (Utilities.PREDICTIVE_APPS_PREFERENCE_KEY.equals(key)) {
                 mShowPredictiveApps = Utilities.isPredictAppsEnabled(getApplicationContext());
             }
+            if (Utilities.ICON_PACK_PREFERENCE_KEY.equals(key)) {
+                mModel.clearIconCache();
+                mModel.resetLoadedState(true, true);
+                mOnResumeNeedsLoad = true;
+            }
             if (!waitUntilResume(this, true)) {
                 run();
             }
