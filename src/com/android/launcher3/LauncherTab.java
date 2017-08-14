@@ -24,6 +24,8 @@ import com.google.android.libraries.launcherclient.LauncherClientCallbacksAdapte
 
 public class LauncherTab {
 
+    public static final String SEARCH_PACKAGE = "com.google.android.googlequicksearchbox";
+
     private Launcher mLauncher;
     private LauncherClient mLauncherClient;
     private Workspace mWorkspace;
@@ -40,7 +42,8 @@ public class LauncherTab {
 
     protected void updateLauncherTab(boolean enabled) {
         if (enabled) {
-            mLauncherClient = new LauncherClient(mLauncher, new LauncherClientCallbacks(), true);
+            mLauncherClient = new LauncherClient(mLauncher,
+                    new LauncherClientCallbacks(), SEARCH_PACKAGE, true);
             mLauncher.setLauncherOverlay(new LauncherOverlays());
         } else {
             mLauncher.setLauncherOverlay(null);

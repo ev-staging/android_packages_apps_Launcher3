@@ -80,11 +80,14 @@ public class SettingsActivity extends Activity {
                 rotationPref.setDefaultValue(Utilities.getAllowRotationDefaultValue(getActivity()));
             }
 
-            boolean state = Utilities.getPrefs(getActivity()).getBoolean(
-                    Utilities.ACTION_LEFT_PAGE_CHANGED, true);
-
             mLeftPage = (SwitchPreference) findPreference(Utilities.KEY_LEFT_PAGE);
-            mLeftPage.setChecked(state);
+            if (!isSearchInstalled()) {
+                getPreferenceScreen().removePreference(mLeftPage);
+            } else {
+                boolean state = Utilities.getPrefs(getActivity()).getBoolean(
+                        Utilities.ACTION_LEFT_PAGE_CHANGED, true);
+                mLeftPage.setChecked(state);
+            }
         }
 
         @Override
@@ -108,6 +111,10 @@ public class SettingsActivity extends Activity {
                 return true;
             }
             return false;
+        }
+
+        private boolean isSearchInstalled() {
+            return Utilities.isPackageInstalled(getActivity(), LauncherTab.SEARCH_PACKAGE);
         }
     }
 

@@ -220,7 +220,6 @@ public class Launcher extends Activity
     private boolean mLauncherTabEnabled;
 
     private final BroadcastReceiver mUiBroadcastReceiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             if (ACTION_APPWIDGET_HOST_RESET.equals(intent.getAction())) {
@@ -228,12 +227,6 @@ public class Launcher extends Activity
                     mAppWidgetHost.startListening();
                 }
             }
-        }
-    };
-
-    private final BroadcastReceiver mLeftPageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
             if (Utilities.ACTION_LEFT_PAGE_CHANGED.equals(intent.getAction())) {
                 if (mLauncherTab != null) {
                     mLauncherTabEnabled = isLauncherTabEnabled();
@@ -504,11 +497,10 @@ public class Launcher extends Activity
         mDefaultKeySsb = new SpannableStringBuilder();
         Selection.setSelection(mDefaultKeySsb, 0);
 
-        IntentFilter filter = new IntentFilter(ACTION_APPWIDGET_HOST_RESET);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_APPWIDGET_HOST_RESET);
+        filter.addAction(Utilities.ACTION_LEFT_PAGE_CHANGED);
         registerReceiver(mUiBroadcastReceiver, filter);
-
-        IntentFilter nowPageFilter = new IntentFilter(Utilities.ACTION_LEFT_PAGE_CHANGED);
-        registerReceiver(mLeftPageReceiver, nowPageFilter);
 
         mLauncherTabEnabled = isLauncherTabEnabled();
 
@@ -2122,7 +2114,6 @@ public class Launcher extends Activity
 
         LauncherAnimUtils.onDestroyActivity();
 
-        unregisterReceiver(mLeftPageReceiver);
         if (mLauncherTabEnabled) {
             mLauncherTab.getClient().onDestroy();
         }
