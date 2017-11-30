@@ -328,4 +328,8 @@
 
     <string name="left_tab_label">Google Now tab</string>
     <string name="left_tab_description">Toggle Google Now intergration</string>
+
+    <!-- Preference categories -->
+    <string name="home_category_title">Home screen</string>
+    <string name="icon_category_title">App icons</string>
 </resources>
