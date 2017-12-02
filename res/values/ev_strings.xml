@@ -28,4 +28,16 @@
     <!-- Settings message explaining when the -1 screen is available on an LTR device. [CHAR LIMIT=100] -->
     <string name="enable_minus_one_desc">When you swipe left from main Home screen</string>
 
+    <!-- Default icon shape -->
+    <string name="icon_shape_default" translatable="false">@string/mask_path_circle</string>
+
+    <!-- Rounded square -->
+    <string name="mask_path_square" translatable="false">"M50,0L92,0C96.42,0 100,4.58 100 8L100,92C100, 96.42 96.42 100 92 100L8 100C4.58, 100 0 96.42 0 92L0 8 C 0 4.42 4.42 0 8 0L50 0Z"</string>
+    <!-- Squircle -->
+    <string name="mask_path_squircle" translatable="false">"M50,0 C10,0 0,10 0,50 0,90 10,100 50,100 90,100 100,90 100,50 100,10 90,0 50,0 Z"</string>
+    <!-- Circle -->
+    <string name="mask_path_circle" translatable="false">"M50 0A50 50,0,1,1,50 100A50 50,0,1,1,50 0"</string>
+    <!-- Teardrop -->
+    <string name="mask_path_teardrop" translatable="false">"M50,0A50,50,0,0 1 100,50 L100,85 A15,15,0,0 1 85,100 L50,100 A50,50,0,0 1 50,0z"</string>
+
 </resources>
