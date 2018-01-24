@@ -488,7 +488,7 @@ public class LauncherModel extends BroadcastReceiver
         synchronized (mLock) {
             stopLoader();
             mLoaderTask = new LoaderTask(mApp, mBgAllAppsList, sBgDataModel, results);
-            runOnWorkerThread(mLoaderTask);
+            sWorker.post(mLoaderTask);
         }
     }
 
