@@ -24,6 +24,7 @@
     <string-array translatable="false" name="icon_shape_paths_values">
         <item>@string/icon_shape_default</item>
         <item>@string/mask_path_square</item>
+        <item>@string/mask_path_super_ellipse</item>
         <item>@string/mask_path_squircle</item>
         <item>@string/mask_path_circle</item>
         <item>@string/mask_path_teardrop</item>
@@ -33,6 +34,7 @@
         <!-- Option to not change the icon shape on home screen. [CHAR LIMIT=50] -->
         <item>@string/icon_shape_system_default</item>
         <item>@string/icon_shape_square</item>
+        <item>@string/icon_shape_super_ellipse</item>
         <item>@string/icon_shape_squircle</item>
         <item>@string/icon_shape_circle</item>
         <item>@string/icon_shape_teardrop</item>
