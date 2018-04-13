@@ -1210,7 +1210,10 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
             if (mIsBeingDragged) {
                 final int activePointerId = mActivePointerId;
                 final int pointerIndex = ev.findPointerIndex(activePointerId);
-                if (pointerIndex == -1) return true;
+                if (pointerIndex == -1) {
+                    onScrollInteractionEnd();
+                    return true;
+                }
 
                 final float primaryDirection = mOrientationHandler.getPrimaryDirection(ev,
                     pointerIndex);
