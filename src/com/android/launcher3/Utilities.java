@@ -26,7 +26,10 @@ import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.LauncherActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ShortcutInfo;
 import android.content.res.Resources;
@@ -620,6 +623,15 @@ public final class Utilities {
         @Override
         public int getIntrinsicWidth() {
             return mSize;
+        }
+    }
+
+    public static boolean hasPackageInstalled(Context context, String pkgName) {
+        try {
+            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(pkgName, 0);
+            return ai.enabled;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
         }
     }
 }

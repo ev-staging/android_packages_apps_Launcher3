@@ -17,6 +17,13 @@
 <androidx.preference.PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <SwitchPreference
+        android:key="pref_enable_minus_one"
+        android:title="@string/enable_minus_one_title"
+        android:summary="@string/enable_minus_one_desc"
+        android:defaultValue="true"
+        android:persistent="true" />
+
     <com.android.launcher3.settings.NotificationDotsPreference
         android:key="pref_icon_badging"
         android:title="@string/notification_dots_title"

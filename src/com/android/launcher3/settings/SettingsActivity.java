@@ -45,6 +45,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.uioverrides.plugins.PluginManagerWrapper;
 import com.android.launcher3.util.SecureSettingsObserver;
+import com.android.launcher3.searchlauncher.SearchLauncherCallbacks;
 
 /**
  * Settings activity for Launcher. Currently implements the following setting: Allow rotation
@@ -63,6 +64,8 @@ public class SettingsActivity extends Activity
     public static final String EXTRA_SHOW_FRAGMENT_ARGS = ":settings:show_fragment_args";
     private static final int DELAY_HIGHLIGHT_DURATION_MILLIS = 600;
     public static final String SAVE_HIGHLIGHTED_KEY = "android:preference_highlighted";
+
+    public static final String KEY_MINUS_ONE = "pref_enable_minus_one";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,6 +206,9 @@ public class SettingsActivity extends Activity
                     // Show if plugins are enabled or flag UI is enabled.
                     return FeatureFlags.showFlagTogglerUi(getContext()) ||
                             PluginManagerWrapper.hasPlugins(getContext());
+                case KEY_MINUS_ONE:
+                    return Utilities.hasPackageInstalled(getContext(),
+                            SearchLauncherCallbacks.SEARCH_PACKAGE);
             }
 
             return true;
