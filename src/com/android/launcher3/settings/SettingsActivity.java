@@ -40,6 +40,7 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.GridOptionsProvider;
 import com.android.launcher3.uioverrides.plugins.PluginManagerWrapper;
 import com.android.launcher3.util.SecureSettingsObserver;
+import com.android.launcher3.searchlauncher.SearchLauncherCallbacks;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragment;
@@ -69,6 +70,7 @@ public class SettingsActivity extends Activity
     public static final String SAVE_HIGHLIGHTED_KEY = "android:preference_highlighted";
 
     public static final String GRID_OPTIONS_PREFERENCE_KEY = "pref_grid_options";
+    public static final String KEY_MINUS_ONE = "pref_enable_minus_one";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -236,6 +238,9 @@ public class SettingsActivity extends Activity
                     return Utilities.isDevelopersOptionsEnabled(getContext()) &&
                             Utilities.IS_DEBUG_DEVICE &&
                             Utilities.existsStyleWallpapers(getContext());
+                case KEY_MINUS_ONE:
+                    return Utilities.hasPackageInstalled(getContext(),
+                            SearchLauncherCallbacks.SEARCH_PACKAGE);
             }
 
             return true;

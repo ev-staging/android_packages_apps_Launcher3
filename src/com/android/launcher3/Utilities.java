@@ -780,4 +780,13 @@ public final class Utilities {
             return mSize;
         }
     }
+
+    public static boolean hasPackageInstalled(Context context, String pkgName) {
+        try {
+            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(pkgName, 0);
+            return ai.enabled;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
 }
