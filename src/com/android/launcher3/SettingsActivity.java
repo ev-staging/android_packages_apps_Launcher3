@@ -47,6 +47,7 @@ import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.util.ListViewHighlighter;
 import com.android.launcher3.util.SettingsObserver;
 import com.android.launcher3.views.ButtonPreference;
+import com.android.launcher3.searchlauncher.SearchLauncherCallbacks;
 
 import java.util.Objects;
 
@@ -60,6 +61,7 @@ public class SettingsActivity extends Activity {
     public static final String NOTIFICATION_BADGING = "notification_badging";
     /** Hidden field Settings.Secure.ENABLED_NOTIFICATION_LISTENERS */
     private static final String NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners";
+    public static final String KEY_MINUS_ONE = "pref_enable_minus_one";
 
     private static final String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
     private static final String EXTRA_SHOW_FRAGMENT_ARGS = ":settings:show_fragment_args";
@@ -136,6 +138,12 @@ public class SettingsActivity extends Activity {
             } else {
                 // Initialize the UI once
                 rotationPref.setDefaultValue(getAllowRotationDefaultValue());
+            }
+
+            Preference minusOnePref = findPreference(KEY_MINUS_ONE);
+            if (!Utilities.hasPackageInstalled(getContext(),
+                    SearchLauncherCallbacks.SEARCH_PACKAGE)) {
+                getPreferenceScreen().removePreference(minusOnePref);
             }
         }
 

@@ -52,4 +52,10 @@
         android:defaultValue=""
         android:persistent="false" />
 
+    <SwitchPreference
+        android:key="pref_enable_minus_one"
+        android:title="@string/enable_minus_one_title"
+        android:summary="@string/enable_minus_one_desc"
+        android:persistent="true" />
+
 </PreferenceScreen>
