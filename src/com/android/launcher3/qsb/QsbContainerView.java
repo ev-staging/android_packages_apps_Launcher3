@@ -30,6 +30,7 @@ import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -44,6 +45,7 @@ import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.searchlauncher.SearchLauncherCallbacks;
 
 /**
  * A frame layout which contains a QSB. This internally uses fragment to bind the view, which
@@ -53,6 +55,7 @@ import com.android.launcher3.config.FeatureFlags;
  * AppWidgetManager directly, so that it keeps working in that case.
  */
 public class QsbContainerView extends FrameLayout {
+
 
     public QsbContainerView(Context context) {
         super(context);
@@ -128,6 +131,27 @@ public class QsbContainerView extends FrameLayout {
             Bundle opts = createBindOptions();
             Activity activity = getActivity();
             AppWidgetManager widgetManager = AppWidgetManager.getInstance(activity);
+
+            final String gSearchWidget = SearchLauncherCallbacks.SEARCH_PACKAGE + ".SearchWidgetProvider";
+            if (mWidgetInfo.provider.getClassName().equals(gSearchWidget)) {
+                try {
+                    ComponentName widgetProvider = new ComponentName(
+                            SearchLauncherCallbacks.SEARCH_PACKAGE, mWidgetInfo.provider.getClassName());
+                    ActivityInfo pkgInfo = activity.getPackageManager().getReceiverInfo(widgetProvider, 128);
+                    if (pkgInfo != null) {
+                        final String resPath = "com.google.android.gsa.searchwidget.alt_initial_layout_cqsb";
+                        final int resId = pkgInfo.metaData.getInt(resPath, -1);
+                        if (resId != -1) {
+                            mWidgetInfo.initialLayout = resId;
+                        }
+                        final String launcherId = "attached-launcher-identifier";
+                        opts.putString(launcherId, activity.getPackageName());
+                        final String styleRequested = "requested-widget-style";
+                        opts.putString(styleRequested, "cqsb");
+                    }
+                } catch (Exception e) {
+                }
+            }
 
             int widgetId = Utilities.getPrefs(activity).getInt(mKeyWidgetId, -1);
             AppWidgetProviderInfo widgetInfo = widgetManager.getAppWidgetInfo(widgetId);
