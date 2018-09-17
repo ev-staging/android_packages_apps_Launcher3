@@ -26,6 +26,7 @@ import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -40,6 +41,7 @@ import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.searchlauncher.SearchLauncherCallbacks;
 
 /**
  * A frame layout which contains a QSB. This internally uses fragment to bind the view, which
@@ -49,6 +51,7 @@ import com.android.launcher3.config.FeatureFlags;
  * AppWidgetManager directly, so that it keeps working in that case.
  */
 public class QsbContainerView extends FrameLayout {
+
 
     public QsbContainerView(Context context) {
         super(context);
@@ -78,6 +81,8 @@ public class QsbContainerView extends FrameLayout {
 
         private static final int REQUEST_BIND_QSB = 1;
         private static final String QSB_WIDGET_ID = "qsb_widget_id";
+        private static final String ATTACHED_LAUNCHER_ID = "attached-launcher-identifier";
+        private static final String REQUESTED_WIDGET_STYLE = "requested-widget-style";
 
         private QsbWidgetHost mQsbWidgetHost;
         private AppWidgetProviderInfo mWidgetInfo;
@@ -126,6 +131,25 @@ public class QsbContainerView extends FrameLayout {
             opts.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, size.top);
             opts.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, size.right);
             opts.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, size.bottom);
+
+            final String gSearchWidget = SearchLauncherCallbacks.SEARCH_PACKAGE + ".SearchWidgetProvider";
+            if (mWidgetInfo.provider.getClassName().equals(gSearchWidget)) {
+                try {
+                    ComponentName widgetProvider = new ComponentName(
+                            SearchLauncherCallbacks.SEARCH_PACKAGE, mWidgetInfo.provider.getClassName());
+                    ActivityInfo pkgInfo = activity.getPackageManager().getReceiverInfo(widgetProvider, 128);
+                    if (pkgInfo != null) {
+                        final String resPath = "com.google.android.gsa.searchwidget.alt_initial_layout_cqsb";
+                        final int resId = pkgInfo.metaData.getInt(resPath, -1);
+                        if (resId != -1) {
+                            mWidgetInfo.initialLayout = resId;
+                        }
+                        opts.putString(ATTACHED_LAUNCHER_ID, activity.getPackageName());
+                        opts.putString(REQUESTED_WIDGET_STYLE, "cqsb");
+                    }
+                } catch (Exception e) {
+                }
+            }
 
             int widgetId = Utilities.getPrefs(activity).getInt(QSB_WIDGET_ID, -1);
             AppWidgetProviderInfo widgetInfo = widgetManager.getAppWidgetInfo(widgetId);
