@@ -49,4 +49,8 @@
     <!-- Text to indicate that the search bar setting is on [CHAR LIMIT=100] -->
     <string name="enable_qsb_widget_desc">Toggle the search bar visibility on the home screen</string>
 
+    <!-- Categories -->
+    <string name="settings_category_home">Home screen settings</string>
+    <string name="settings_category_icons">Icons settings</string>
+
 </resources>
