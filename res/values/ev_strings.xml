@@ -28,4 +28,8 @@
     <string name="google_title" translatable="false">Google</string>
     <string name="play_folder_title">Play</string>
 
+    <!-- Categories -->
+    <string name="settings_category_home">Home screen settings</string>
+    <string name="settings_category_icons">Icons settings</string>
+
 </resources>
