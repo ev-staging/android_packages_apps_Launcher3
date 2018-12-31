@@ -97,6 +97,7 @@ import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.popup.PopupDataProvider;
+import com.android.launcher3.qsb.QsbAnimationController;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.states.InternalStateHandler;
 import com.android.launcher3.states.RotationHelper;
@@ -251,6 +252,12 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     private final Handler mHandler = new Handler();
     private final Runnable mLogOnDelayedResume = this::logOnDelayedResume;
 
+    private QsbAnimationController mQsbController;
+
+    public QsbAnimationController getQsbController() {
+        return mQsbController;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (DEBUG_STRICT_MODE) {
@@ -347,6 +354,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         mRotationHelper.initialize();
 
         TraceHelper.endSection("Launcher-onCreate");
+
+        mQsbController = new QsbAnimationController(this);
     }
 
     @Override
@@ -1372,6 +1381,19 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     @Override
     public void startSearch(String initialQuery, boolean selectInitialQuery,
             Bundle appSearchData, boolean globalSearch) {
+
+        View gIcon = findViewById(R.id.g_icon);
+        while (gIcon != null && !gIcon.isClickable()) {
+            if (gIcon.getParent() instanceof View) {
+                gIcon = (View)gIcon.getParent();
+            } else {
+                gIcon = null;
+            }
+        }
+        if (gIcon != null && gIcon.performClick()) {
+            return;
+        }
+
         if (appSearchData == null) {
             appSearchData = new Bundle();
             appSearchData.putString("source", "launcher-search");
