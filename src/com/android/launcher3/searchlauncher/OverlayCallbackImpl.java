@@ -45,7 +45,7 @@ public class OverlayCallbackImpl implements LauncherOverlay, LauncherClientCallb
     }
 
     @Override
-    public void onServiceStateChanged(boolean overlayAttached, boolean hotwordActive) {
+    public void onServiceStateChanged(boolean overlayAttached) {
         if (overlayAttached != mWasOverlayAttached) {
             mWasOverlayAttached = overlayAttached;
             mLauncher.setLauncherOverlay(overlayAttached ? this : null);
@@ -78,6 +78,4 @@ public class OverlayCallbackImpl implements LauncherOverlay, LauncherClientCallb
     public void setOverlayCallbacks(Launcher.LauncherOverlayCallbacks callbacks) {
         mLauncherOverlayCallbacks = callbacks;
     }
-
-
 }

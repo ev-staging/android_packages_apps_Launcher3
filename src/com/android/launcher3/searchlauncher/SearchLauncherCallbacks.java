@@ -14,6 +14,9 @@ import com.android.launcher3.SettingsActivity;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.search.AllAppsSearchBarController;
 import com.android.launcher3.util.ComponentKey;
+
+import com.google.android.libraries.gsa.launcherclient.ClientOptions;
+import com.google.android.libraries.gsa.launcherclient.ClientService;
 import com.google.android.libraries.gsa.launcherclient.LauncherClient;
 
 import java.io.FileDescriptor;
@@ -52,7 +55,10 @@ public class SearchLauncherCallbacks implements LauncherCallbacks, OnSharedPrefe
 
     @Override
     public void onDetachedFromWindow() {
-        mLauncherClient.onDetachedFromWindow();
+        if (!mLauncherClient.isDestroyed()) {
+            mLauncherClient.getEventInfo().parse(0, "detachedFromWindow", 0.0f);
+            mLauncherClient.setParams(null);
+        }
     }
 
     @Override
@@ -100,14 +106,45 @@ public class SearchLauncherCallbacks implements LauncherCallbacks, OnSharedPrefe
 
     @Override
     public void onDestroy() {
-        mLauncherClient.onDestroy();
+        if (!mLauncherClient.isDestroyed()) {
+            mLauncherClient.getActivity().unregisterReceiver(mLauncherClient.mInstallListener);
+        }
+
+        mLauncherClient.setDestroyed(true);
+        mLauncherClient.getBaseService().disconnect();
+
+        if (mLauncherClient.getOverlayCallback() != null) {
+            mLauncherClient.getOverlayCallback().mClient = null;
+            mLauncherClient.getOverlayCallback().mWindowManager = null;
+            mLauncherClient.getOverlayCallback().mWindow = null;
+            mLauncherClient.setOverlayCallback(null);
+        }
+
+        ClientService service = mLauncherClient.getClientService();
+        LauncherClient client = service.getClient();
+        if (client != null && client.equals(mLauncherClient)) {
+            service.mWeakReference = null;
+            if (!mLauncherClient.getActivity().isChangingConfigurations()) {
+                service.disconnect();
+                if (ClientService.sInstance == service) {
+                    ClientService.sInstance = null;
+                }
+            }
+        }
+
         Utilities.getPrefs(mLauncher).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         if (SettingsActivity.KEY_MINUS_ONE.equals(key)) {
-            mLauncherClient.setClientOptions(getClientOptions(prefs));
+            if (getClientOptions(prefs).options != mLauncherClient.mFlags) {
+                mLauncherClient.mFlags = getClientOptions(prefs).options;
+                if (mLauncherClient.getParams() != null) {
+                    mLauncherClient.updateConfiguration();
+                }
+                mLauncherClient.getEventInfo().parse("setClientOptions ", mLauncherClient.mFlags);
+            }
         }
     }
 
@@ -144,13 +181,10 @@ public class SearchLauncherCallbacks implements LauncherCallbacks, OnSharedPrefe
         return true;
     }
 
-    private LauncherClient.ClientOptions getClientOptions(SharedPreferences prefs) {
+    private ClientOptions getClientOptions(SharedPreferences prefs) {
         boolean hasPackage = Utilities.hasPackageInstalled(mLauncher, SEARCH_PACKAGE);
         boolean isEnabled = prefs.getBoolean(SettingsActivity.KEY_MINUS_ONE, true);
 
-        return new LauncherClient.ClientOptions(hasPackage && isEnabled,
-                true, /* enableHotword */
-                true /* enablePrewarming */
-        );
+        return new ClientOptions((hasPackage && isEnabled) ? 1 : 0);
     }
 }
