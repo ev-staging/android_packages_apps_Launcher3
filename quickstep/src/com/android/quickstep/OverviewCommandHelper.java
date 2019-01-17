@@ -131,6 +131,7 @@ public class OverviewCommandHelper {
 
         final String overviewIntentCategory;
         if (defaultHome == null || mMyHomeComponent.equals(defaultHome)) {
+            finishRecentsActivity();
             // User default home is same as out home app. Use Overview integrated in Launcher.
             overviewComponent = mMyHomeComponent;
             mActivityControlHelper = new LauncherActivityControllerHelper();
@@ -173,6 +174,19 @@ public class OverviewCommandHelper {
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
+    private void finishRecentsActivity() {
+        ActivityControlHelper activityHelper = getActivityControlHelper();
+        if (activityHelper != null) {
+            BaseDraggingActivity activity = activityHelper.getCreatedActivity();
+            if (activity != null) {
+                ComponentName componentName = activity.getComponentName();
+                if (componentName.equals(new ComponentName(mContext, RecentsActivity.class))) {
+                    activity.finish();
+                }
+            }
+        }
+    }
+
     public void onDestroy() {
         mContext.unregisterReceiver(mUserPreferenceChangeReceiver);
 
@@ -180,6 +194,7 @@ public class OverviewCommandHelper {
             mContext.unregisterReceiver(mOtherHomeAppUpdateReceiver);
             mUpdateRegisteredPackage = null;
         }
+        finishRecentsActivity();
     }
 
     public void onOverviewToggle() {
