@@ -53,4 +53,7 @@
     <string name="settings_category_home">Home screen settings</string>
     <string name="settings_category_icons">Icons settings</string>
 
+    <!-- Expand statusbar -->
+    <string name="statusbar_expand">Swipe down to show notifications</string>
+
 </resources>
