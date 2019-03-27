@@ -37,7 +37,7 @@
             android:key="pref_qsb_widget"
             android:title="@string/enable_qsb_widget_title"
             android:summary="@string/enable_qsb_widget_desc"
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:persistent="true" />
 
         <SwitchPreference
