@@ -18,6 +18,7 @@ package com.android.launcher3.views;
 import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_FLAVOR;
 import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_OFFSET;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -212,6 +213,10 @@ public class OptionsPopupView extends ArrowPopup
         }
         String pickerPackage = launcher.getString(R.string.wallpaper_picker_package);
         if (!TextUtils.isEmpty(pickerPackage)) {
+            if (Utilities.existsStyleWallpapers(launcher)) {
+                intent.setComponent(new ComponentName(pickerPackage,
+                        "com.android.customization.picker.CustomizationPickerActivity"));
+            }
             intent.setPackage(pickerPackage);
         }
         return launcher.startActivitySafely(v, intent, null, null);
