@@ -124,7 +124,7 @@ public class StaggeredWorkspaceAnim {
             }
 
             if (launcher.getAppsView().getSearchUiManager()
-                    .isQsbVisible(NORMAL.getVisibleElements(launcher))) {
+                    .isQsbVisible(NORMAL.getVisibleElements(launcher), false)) {
                 addStaggeredAnimationForView(launcher.getAppsView().getSearchView(),
                         grid.inv.numRows + 2, totalRows);
             }

@@ -223,7 +223,9 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     @Override
     public void setContentVisibility(int visibleElements, PropertySetter setter,
             Interpolator interpolator) {
-        setter.setViewAlpha(this, isQsbVisible(visibleElements) ? 1 : 0, interpolator);
+        boolean hasHeaderExtra = mAppsView != null
+                    && mAppsView.getFloatingHeaderView().hasVisibleContent();
+        setter.setViewAlpha(this, isQsbVisible(visibleElements, hasHeaderExtra) ? 1 : 0, interpolator);
     }
 
     @Override

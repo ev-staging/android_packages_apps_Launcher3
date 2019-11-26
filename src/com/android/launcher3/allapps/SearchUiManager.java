@@ -16,6 +16,7 @@
 package com.android.launcher3.allapps;
 
 import static com.android.launcher3.LauncherState.ALL_APPS_HEADER;
+import static com.android.launcher3.LauncherState.ALL_APPS_HEADER_EXTRA;
 
 import android.graphics.Rect;
 import android.view.KeyEvent;
@@ -61,8 +62,9 @@ public interface SearchUiManager {
     /**
      * Returns true if the QSB should be visible for the given set of visible elements
      */
-    default boolean isQsbVisible(int visibleElements) {
-        return (visibleElements & ALL_APPS_HEADER) != 0;
+    default boolean isQsbVisible(int visibleElements, boolean extra) {
+        int headerElement = extra ? ALL_APPS_HEADER_EXTRA : ALL_APPS_HEADER;
+        return (visibleElements & headerElement) != 0;
     }
 
     /**
