@@ -27,4 +27,8 @@
     <!-- Label of tab to indicate google apps -->
     <string name="google_folder_title" translatable="false">Google</string>
 
+    <!-- QSB -->
+    <string name="label_search">Search</string>
+    <string name="label_voice_search">Voice search</string>
+
 </resources>

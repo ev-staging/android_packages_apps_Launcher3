@@ -586,6 +586,10 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         mWorkspace.setLauncherOverlay(overlay);
     }
 
+    public LauncherCallbacks getLauncherCallbacks() {
+        return mLauncherCallbacks;
+    }
+
     public boolean setLauncherCallbacks(LauncherCallbacks callbacks) {
         mLauncherCallbacks = callbacks;
         return true;
