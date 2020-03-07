@@ -1,9 +1,12 @@
 package com.android.launcher3.searchlauncher;
 
+
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -14,6 +17,8 @@ import com.android.launcher3.R;
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherCallbacks;
+import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.graphics.GridOptionsProvider;
 import com.android.launcher3.uioverrides.WallpaperColorInfo;
 import com.android.launcher3.uioverrides.WallpaperColorInfo.OnChangeListener;
 import com.android.launcher3.util.Themes;
@@ -70,6 +75,7 @@ public class SearchLauncherCallbacks implements LauncherCallbacks,
         instance.addOnChangeListener(this);
         onExtractedColorsChanged(instance);
         mPrefs.registerOnSharedPreferenceChangeListener(this);
+        updateGridOptionsProvider(mLauncher);
     }
 
     @Override
@@ -230,5 +236,18 @@ public class SearchLauncherCallbacks implements LauncherCallbacks,
 
     public static int compositeAllApps(int color, Context context) {
         return ColorUtils.compositeColors(Themes.getAttrColor(context, R.attr.allAppsScrimColor), color);
+    }
+
+    private void updateGridOptionsProvider(Context context) {
+        final PackageManager pm = context.getPackageManager();
+        final ComponentName gridOptionsProvider = new ComponentName(mLauncher, GridOptionsProvider.class);
+        int gridOptions = FeatureFlags.GRID_OPTIONS.get() ?
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+        int componentEnabled = pm.getComponentEnabledSetting(gridOptionsProvider);
+        if (componentEnabled != gridOptions) {
+            context.getPackageManager().setComponentEnabledSetting(
+                    gridOptionsProvider, componentEnabled, PackageManager.DONT_KILL_APP);
+        }
     }
 }
