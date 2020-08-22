@@ -132,6 +132,7 @@
 
     <style name="HomeSettingsTheme" parent="@android:style/Theme.DeviceDefault.Settings">
         <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:listDivider">@null</item>
     </style>
 
     <!--
